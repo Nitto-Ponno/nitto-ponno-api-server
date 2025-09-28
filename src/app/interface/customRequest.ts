@@ -1,5 +1,6 @@
 // import { TUser } from "../modules/user/user.interface";
 import { Types } from "mongoose";
+import { TUser } from "../modules/user/user.interface";
 
 declare global {
   namespace Express {
@@ -8,7 +9,7 @@ declare global {
         id: Types.ObjectId;
         userRole: string;
         email: string;
-        // userData: TUser;
+        userData: TUser;
       };
     }
   }
