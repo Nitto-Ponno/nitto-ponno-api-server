@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import { TUser } from "../user/user.interface";
 import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import varifyToken from "../../utils/verifyToken";
+import ms from "ms";
 // import { EmailJobName, emailQueue } from "../../queues/email.queue";
 
 const generateOTP = () => {
@@ -54,12 +55,12 @@ const adminLoginFromDB = async (payload: TLoginCredentials) => {
   const accessToken = createToken({
     payload: jwtPayload,
     secret: config.access_secret as string,
-    expiresIn: config.access_token_expires_in as string,
+    expiresIn: config.access_token_expires_in,
   });
   const refreshToken = createToken({
     payload: jwtPayload,
     secret: config.refresh_secret as string,
-    expiresIn: config.refresh_token_expires_in as string,
+    expiresIn: config.refresh_token_expires_in,
   });
 
   return {
@@ -100,12 +101,12 @@ const userLoginFromDB = async (payload: TLoginCredentials) => {
   const accessToken = createToken({
     payload: jwtPayload,
     secret: config.access_secret as string,
-    expiresIn: config.access_token_expires_in as string,
+    expiresIn: config.access_token_expires_in,
   });
   const refreshToken = createToken({
     payload: jwtPayload,
     secret: config.refresh_secret as string,
-    expiresIn: config.refresh_token_expires_in as string,
+    expiresIn: config.refresh_token_expires_in,
   });
 
   return {
@@ -160,7 +161,7 @@ const refreshToken = async (token: string) => {
   const accessToken = createToken({
     payload,
     secret: config.access_secret as string,
-    expiresIn: config.access_token_expires_in as string,
+    expiresIn: config.access_token_expires_in,
   });
 
   return {
@@ -189,7 +190,7 @@ const forgotPasswordService = async (email: string) => {
       email: user.email as string,
     },
     secret: config.otp_secret as string,
-    expiresIn: config.otp_expires_in as string,
+    expiresIn: config.otp_expires_in,
   });
 
   await User.findByIdAndUpdate(user._id, { otp: otpToken });
@@ -275,7 +276,7 @@ const SendVerificationEmailService = async (email: string) => {
       email: user.email as string,
     },
     secret: config.otp_secret as string,
-    expiresIn: config.otp_expires_in as string,
+    expiresIn: config.otp_expires_in,
   });
 
   await User.findByIdAndUpdate(user._id, { otp: otpToken });
@@ -336,12 +337,12 @@ const verifyEmailService = async (email: string, otp: string | undefined) => {
   const accessToken = createToken({
     payload: jwtPayload,
     secret: config.access_secret as string,
-    expiresIn: config.access_token_expires_in as string,
+    expiresIn: config.access_token_expires_in,
   });
   const refreshToken = createToken({
     payload: jwtPayload,
     secret: config.refresh_secret as string,
-    expiresIn: config.refresh_token_expires_in as string,
+    expiresIn: config.refresh_token_expires_in,
   });
 
   const verifiedUser = await User.findOneAndUpdate(
@@ -446,7 +447,7 @@ const createCustomerIntoDB = async (customer: TUser) => {
         email: user.email as string,
       },
       secret: config.otp_secret as string,
-      expiresIn: config.otp_expires_in as string,
+      expiresIn: config.otp_expires_in,
     });
 
     user.otp = otpToken;
