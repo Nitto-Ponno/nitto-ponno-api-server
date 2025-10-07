@@ -9,7 +9,6 @@ declare global {
         id: Types.ObjectId;
         userRole: string;
         email: string;
-        // userData: TUser;
         userData: TUser;
       };
     }
