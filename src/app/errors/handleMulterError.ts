@@ -1,13 +1,10 @@
-import { MulterError } from "multer";
 import {
   TErrorSourse,
   TGenericErrorResponse,
 } from "../interface/error.interface";
 import config from "../config";
 
-const handleMulterError = (err: MulterError): TGenericErrorResponse => {
-  console.log({ multererro: err });
-
+const handleMulterError = (err: any): TGenericErrorResponse => {
   const errorSources: TErrorSourse = [
     {
       path: err?.field || "",
