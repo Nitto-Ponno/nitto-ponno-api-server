@@ -1,0 +1,542 @@
+tags:
+  - name: Authentication
+    description: Authentication and user management endpoints
+paths:
+  /auth/customer-register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new customer
+      description: Creates a new customer account and sends verification email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - phoneNumber
+                - name
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  minLength: 6
+                  example: password123
+                phoneNumber:
+                  type: string
+                  example: +1234567890
+                name:
+                  type: object
+                  required:
+                    - firstName
+                    - lastName
+                  properties:
+                    firstName:
+                      type: string
+                      example: John
+                    middleName:
+                      type: string
+                      example: Middle
+                    lastName:
+                      type: string
+                      example: Doe
+      responses:
+        "200":
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Registration successful. Please validate your email.
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: "#/components/schemas/User"
+                      verificationSent:
+                        type: boolean
+                        example: true
+        "409":
+          description: Conflict - User already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/admin-login:
+    post:
+      tags:
+        - Authentication
+      summary: Admin login
+      description: Authenticates an admin user and returns tokens if verified
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginCredentials"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Login successful, welcome back
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      isVerified:
+                        type: boolean
+                        example: true
+        "401":
+          description: Unauthorized - Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/refresh-token:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: Generates a new access token using the refresh token from cookies
+      responses:
+        "200":
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Successfully created new access token
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        "401":
+          description: Unauthorized - Invalid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/forgot-password:
+    post:
+      tags:
+        - Authentication
+      summary: Initiate password reset
+      description: Sends OTP to user's email for password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+      responses:
+        "200":
+          description: OTP sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: A verification OTP has been sent to your email address. The link will expire in 10 minutes
+                  data:
+                    type: object
+                    example: {}
+        "401":
+          description: Unauthorized - User not found or not verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/reset-password:
+    post:
+      tags:
+        - Authentication
+      summary: Reset password using OTP
+      description: Resets the user's password after verifying OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - otp
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  minLength: 6
+                  example: newpassword123
+                otp:
+                  type: string
+                  pattern: '^\d{6}$'
+                  example: 123456
+      responses:
+        "200":
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Your password was updated successfully
+                  data:
+                    type: object
+                    $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized - Invalid OTP or user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/send-verification:
+    post:
+      tags:
+        - Authentication
+      summary: Send email verification OTP
+      description: Sends OTP for email verification to unverified user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+      responses:
+        "200":
+          description: OTP sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: A verification OTP has been sent to your email address. The link will expire in 10 minutes
+                  data:
+                    type: object
+                    example: {}
+        "401":
+          description: Unauthorized - User not found or already verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/verify-otp:
+    post:
+      tags:
+        - Authentication
+      summary: Verify email using OTP
+      description: Verifies email and issues tokens upon success
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - otp
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                otp:
+                  type: string
+                  pattern: '^\d{6}$'
+                  example: 123456
+      responses:
+        "200":
+          description: Email verification successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Email verification successful
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      refreshToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      isVerified:
+                        type: boolean
+                        example: true
+                      verifiedUser:
+                        $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized - Invalid OTP or user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/getMyData:
+    get:
+      tags:
+        - Authentication
+      summary: Get current user data
+      description: Retrieves the authenticated user's data with optional select query
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: select
+          in: query
+          description: Fields to select (comma-separated)
+          schema:
+            type: string
+            example: name,email
+      responses:
+        "200":
+          description: User data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Successfully retrieved data
+                  data:
+                    $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/update-password:
+    post:
+      tags:
+        - Authentication
+      summary: Update user password
+      description: Updates the authenticated user's password after verifying current password
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - newPassword
+                - currentPassword
+              properties:
+                newPassword:
+                  type: string
+                  minLength: 6
+                  example: newpassword123
+                currentPassword:
+                  type: string
+                  minLength: 6
+                  example: oldpassword123
+      responses:
+        "200":
+          description: Password updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Password updated successfully
+                  data:
+                    type: object
+                    properties:
+                      acknowledged:
+                        type: boolean
+                        example: true
+                      modifiedCount:
+                        type: integer
+                        example: 1
+        "401":
+          description: Unauthorized - Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    LoginCredentials:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          minLength: 6
+          example: password123
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 60f7b1a2b3c4d5e6f7g8h9i0
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        name:
+          type: object
+          properties:
+            firstName:
+              type: string
+              example: John
+            middleName:
+              type: string
+              example: Middle
+            lastName:
+              type: string
+              example: Doe
+            fullName:
+              type: string
+              example: John Middle Doe
+        phoneNumber:
+          type: string
+          example: +1234567890
+        role:
+          type: string
+          example: customer
+        isActive:
+          type: boolean
+          example: true
+        isVerified:
+          type: boolean
+          example: true
+        userType:
+          type: string
+          enum: [customer, admin]
+          example: customer
+        profilePicture:
+          type: string
+          example: /uploads/profile.jpg
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        statusCode:
+          type: integer
+          example: 401
+        message:
+          type: string
+          example: Unauthorized
+        error:
+          type: string
+          example: Invalid credentials
