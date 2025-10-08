@@ -24,7 +24,7 @@ RUN npm install --production
 COPY --from=build /app/dist ./dist
 
 # Copy the .env file from the local context to the container
-# COPY .env .env
+COPY .env .env
 
 # make uploads file 
 RUN mkdir -p /app/uploads
