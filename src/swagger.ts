@@ -14,27 +14,6 @@ const swaggerOptions: swaggerJsDoc.Options = {
       },
     ],
     tags: [
-      //   {
-      //     name: "Category",
-      //     description: "Category management endpoints",
-      //   },
-      //   {
-      //     name: "Blog",
-      //     description: "Blog category management endpoints",
-      //   },
-      //   {
-      //     name: "Reviews",
-      //     description: "Operations related to course reviews",
-      //   },
-      //   {
-      //     name: "Users",
-      //     description: "Operations related to user management",
-      //   },
-      //   {
-      //     name: "Admin Courses",
-      //     description:
-      //       "Operations related to course management for administrators",
-      //   },
       {
         name: "Authentication",
         description:
@@ -55,11 +34,8 @@ const swaggerOptions: swaggerJsDoc.Options = {
         bearerAuth: [],
       },
     ],
-    //host: 'localhost:5003', // the host or url of the app
-    // basePath: '/api',
   },
-  //apis: ['src/docs/**/*.yaml']
-  apis: [],
+  apis: ["./docs/auth.yaml"],
 };
 
 export default swaggerJsDoc(swaggerOptions);
