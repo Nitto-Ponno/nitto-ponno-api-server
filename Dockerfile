@@ -20,6 +20,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --production
 
+# copy docs folder
+COPY docs ./docs
+
 # Copy the build files from the build stage
 COPY --from=build /app/dist ./dist
 
