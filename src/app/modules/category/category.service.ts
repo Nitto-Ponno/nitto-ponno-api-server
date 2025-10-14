@@ -3,14 +3,6 @@ import { TCategory, TUpdateCategory } from "./category.interface";
 import { Category } from "./category.model";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
-// import {
-//   addNotifications,
-//   buildNotifications,
-// } from "../notification/notificaiton.utils";
-// import {
-//   sendSourceSocket,
-//   TSendSourceSocket,
-// } from "../../utils/sendSourceSocket";
 import slugify from "slugify";
 import { TUser } from "../user/user.interface";
 // import { Product } from "../product/product.model";
