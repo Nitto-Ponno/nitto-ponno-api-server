@@ -19,12 +19,24 @@ const swaggerOptions: swaggerJsDoc.Options = {
         description:
           "Operations related to user authentication and session management",
       },
+      {
+        name: "User",
+        description: "User management endpoints",
+      },
+      {
+        name: "Roles",
+        description: "Role management endpoints",
+      },
+      {
+        name: "Category",
+        description: "Category management endpoints",
+      },
     ],
     components: {
       securitySchemes: {
         bearerAuth: {
           type: "http",
-          scheme: "bearer",
+          scheme: "basic",
           bearerFormat: "JWT",
         },
       },
@@ -35,7 +47,7 @@ const swaggerOptions: swaggerJsDoc.Options = {
       },
     ],
   },
-  apis: ["./docs/auth.yaml"],
+  apis: ["./docs/*.yaml"],
 };
 
 export default swaggerJsDoc(swaggerOptions);

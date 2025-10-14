@@ -1,0 +1,4 @@
+tags:
+  - name: User
+    description: User management endpoints
+paths: {}

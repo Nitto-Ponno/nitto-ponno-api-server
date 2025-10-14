@@ -10,6 +10,7 @@ export interface TCrud {
 export enum EAppFeatures {
   role = "role",
   user = "user",
+  category = "category",
 }
 
 export interface TPermission {

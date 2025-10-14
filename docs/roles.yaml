@@ -1,0 +1,387 @@
+tags:
+  - name: Roles
+    description: Role management endpoints
+paths:
+  /roles/create-role:
+    post:
+      tags:
+        - Roles
+      summary: Create a new role
+      description: Creates a new role with specified permissions
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - role
+              properties:
+                role:
+                  type: string
+                  minLength: 1
+                  example: Manager
+                description:
+                  type: string
+                  maxLength: 400
+                  example: Manager role with full access to user and role management
+                permissions:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - feature
+                      - access
+                    properties:
+                      feature:
+                        type: string
+                        enum: [role, user]
+                        example: user
+                      access:
+                        type: object
+                        properties:
+                          read:
+                            type: boolean
+                            default: false
+                            example: true
+                          create:
+                            type: boolean
+                            default: false
+                            example: true
+                          update:
+                            type: boolean
+                            default: false
+                            example: true
+                          delete:
+                            type: boolean
+                            default: false
+                            example: false
+                  example:
+                    - feature: user
+                      access:
+                        read: true
+                        create: true
+                        update: true
+                        delete: false
+                    - feature: role
+                      access:
+                        read: true
+                        create: false
+                        update: false
+                        delete: false
+      responses:
+        "200":
+          description: Role created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Role created successfully
+                  data:
+                    $ref: "#/components/schemas/Role"
+        "401":
+          description: Unauthorized - Invalid token or insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "400":
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Conflict - Role already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /roles/get-all:
+    get:
+      tags:
+        - Roles
+      summary: Get all roles
+      description: Retrieves all roles with read permissions
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Roles retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: retrived all roles successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Role"
+        "401":
+          description: Unauthorized - Invalid token or insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /roles/update-role/{id}:
+    patch:
+      tags:
+        - Roles
+      summary: Update role
+      description: Updates a role by ID with update permissions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Role ID
+          schema:
+            type: string
+            example: 60f7b1a2b3c4d5e6f7g8h9i0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  minLength: 1
+                  example: Senior Manager
+                description:
+                  type: string
+                  maxLength: 400
+                  example: Updated senior manager role with enhanced permissions
+                permissions:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - feature
+                      - access
+                    properties:
+                      feature:
+                        type: string
+                        enum: [role, user]
+                        example: user
+                      access:
+                        type: object
+                        properties:
+                          read:
+                            type: boolean
+                            default: false
+                            example: true
+                          create:
+                            type: boolean
+                            default: false
+                            example: true
+                          update:
+                            type: boolean
+                            default: false
+                            example: true
+                          delete:
+                            type: boolean
+                            default: false
+                            example: true
+                  example:
+                    - feature: user
+                      access:
+                        read: true
+                        create: true
+                        update: true
+                        delete: true
+                    - feature: role
+                      access:
+                        read: true
+                        create: true
+                        update: true
+                        delete: false
+      responses:
+        "200":
+          description: Role updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Updated role successfully
+                  data:
+                    $ref: "#/components/schemas/Role"
+        "401":
+          description: Unauthorized - Invalid token or insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "400":
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /roles/delete-role/{id}:
+    delete:
+      tags:
+        - Roles
+      summary: Delete role
+      description: Deletes a role by ID with delete permissions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Role ID
+          schema:
+            type: string
+            example: 60f7b1a2b3c4d5e6f7g8h9i0
+      responses:
+        "200":
+          description: Role deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Role deleted successfully
+                  data:
+                    type: object
+                    properties:
+                      acknowledged:
+                        type: boolean
+                        example: true
+                      deletedCount:
+                        type: integer
+                        example: 1
+        "401":
+          description: Unauthorized - Invalid token or insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    Role:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 60f7b1a2b3c4d5e6f7g8h9i0
+        role:
+          type: string
+          example: Manager
+        description:
+          type: string
+          example: Manager role with full access to user and role management
+        permissions:
+          type: array
+          items:
+            type: object
+            properties:
+              feature:
+                type: string
+                enum: [role, user]
+                example: user
+              access:
+                type: object
+                properties:
+                  read:
+                    type: boolean
+                    example: true
+                  create:
+                    type: boolean
+                    example: true
+                  update:
+                    type: boolean
+                    example: true
+                  delete:
+                    type: boolean
+                    example: false
+        isDeleted:
+          type: boolean
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00.000Z"
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        statusCode:
+          type: integer
+          example: 401
+        message:
+          type: string
+          example: Unauthorized
+        error:
+          type: string
+          example: Invalid credentials

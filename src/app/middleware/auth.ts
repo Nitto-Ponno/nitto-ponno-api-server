@@ -17,7 +17,10 @@ const validateAuth = () => {
     }
 
     // check if varified user
-    const decoded = varifyToken(token, config.access_secret as string);
+    const decoded = varifyToken(
+      token.split(" ")[1],
+      config.access_secret as string
+    );
 
     if (!decoded) {
       throw new AppError(
