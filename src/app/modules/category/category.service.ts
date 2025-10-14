@@ -58,24 +58,15 @@ const createCategoryIntoDB = async (payload: TCategory, admin: TUser) => {
 };
 
 const getAllCategoriesFromDB = async () => {
-  const categories = await Category.find({ isDeleted: false }).populate([
-    {
-      path: "product_details_categories",
-      select: "-__v",
-    },
-  ]);
+  const categories = await Category.find({ isDeleted: false });
 
   return categories;
 };
 const getFeaturedCategoriesFromDB = async () => {
-  const categories = await Category.find({ isDeleted: false, isFeatured: true })
-    .limit(20)
-    .populate([
-      {
-        path: "product_details_categories",
-        select: "-__v",
-      },
-    ]);
+  const categories = await Category.find({
+    isDeleted: false,
+    isFeatured: true,
+  }).limit(20);
 
   return categories;
 };
@@ -134,12 +125,7 @@ const updateCategoryIntoDB = async (
       throw new AppError(httpStatus.CONFLICT, "Failed to update category");
     }
 
-    const result = await Category.findById(id).populate([
-      {
-        path: "product_details_categories",
-        select: "-__v",
-      },
-    ]);
+    const result = await Category.findById(id);
 
     // const eventPayload: TSendSourceSocket<typeof result> = {
     //   payload: {
@@ -172,12 +158,7 @@ const updateCategoryIntoDB = async (
 };
 
 const getSingleCategoryFromDB = async (id: string) => {
-  const result = await Category.findById(id).populate([
-    {
-      path: "product_details_categories",
-      select: "-__v",
-    },
-  ]);
+  const result = await Category.findById(id);
 
   if (result === null) {
     throw new AppError(httpStatus.CONFLICT, "Categoy does not exist");
