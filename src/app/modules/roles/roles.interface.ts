@@ -11,6 +11,7 @@ export enum EAppFeatures {
   role = "role",
   user = "user",
   category = "category",
+  laundryService = "laundryService",
 }
 
 export interface TPermission {
