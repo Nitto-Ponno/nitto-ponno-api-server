@@ -11,8 +11,7 @@ const validateAuth = () => {
     if (!token) {
       throw new AppError(
         httpStatus.UNAUTHORIZED,
-        "You are not authorized",
-        "unauthorized access request"
+        "You are not authorized,unauthorized access request"
       );
     }
 

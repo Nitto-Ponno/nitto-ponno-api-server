@@ -4,6 +4,7 @@ import validateAuth from "../middleware/auth";
 import { UserRoutes } from "../modules/user/user.routes";
 import { RolesRoutes } from "../modules/roles/roles.routes";
 import { CategoryRoutes } from "../modules/category/category.route";
+import LaundryServiceRoutes from "../modules/laundryservice/laundryservice.routes";
 
 const router = Router();
 
@@ -15,6 +16,7 @@ const moduleRoutes: {
   { path: "/user", route: UserRoutes },
   { path: "/roles", route: RolesRoutes },
   { path: "/category", route: CategoryRoutes },
+  { path: "/laundryService", route: LaundryServiceRoutes },
 ];
 
 moduleRoutes.forEach((route) => {
