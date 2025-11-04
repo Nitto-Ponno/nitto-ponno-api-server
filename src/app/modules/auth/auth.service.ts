@@ -30,7 +30,7 @@ const adminLoginFromDB = async (payload: TLoginCredentials) => {
     throw new AppError(httpStatus.CONFLICT, "User does not exist");
   }
 
-  if (userExist.userType !== "admin") {
+  if (userExist.userType !== "admin" || userExist.role === "çustomer") {
     throw new AppError(httpStatus.UNAUTHORIZED, "You are not an admin");
   }
 

@@ -18,7 +18,7 @@ export interface TUser {
   _id: Types.ObjectId;
   password: string;
   isActive?: boolean;
-  role: "customer" | "admin" | "deliveryman" | "supplier";
+  role: string;
   isVerified?: boolean;
   userType: "customer" | "admin";
   isMasterAdmin?: boolean;
