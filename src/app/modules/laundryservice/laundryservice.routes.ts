@@ -15,6 +15,19 @@ router.post(
   LaundryServiceController.createLaundryService
 );
 
+router.patch(
+  "/:id",
+  checkPermission(EAppFeatures.laundryService, "update"),
+  validateRequest(LaundryServiceValidation.UpdateLaundryServiceSchema),
+  LaundryServiceController.updateLaundryService
+);
+
+router.get(
+  "/",
+  checkPermission(EAppFeatures.laundryService, "read"),
+  LaundryServiceController.getAllLaundryService
+);
+
 const LaundryServiceRoutes = router;
 
 export default LaundryServiceRoutes;

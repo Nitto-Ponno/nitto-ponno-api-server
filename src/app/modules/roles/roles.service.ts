@@ -13,8 +13,6 @@ const createRoleIntoDB = async (payload: TRole) => {
 const getAllRolesFromDB = async () => {
   const result = await Roles.find({ isDeleted: false });
 
-  console.log(result);
-
   return result;
 };
 

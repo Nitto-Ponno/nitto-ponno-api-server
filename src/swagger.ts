@@ -31,6 +31,11 @@ const swaggerOptions: swaggerJsDoc.Options = {
         name: "Category",
         description: "Category management endpoints",
       },
+      {
+        name: "Laundry Services",
+        description:
+          " Manage laundry service types (wash, dry-clean, iron, etc.)",
+      },
     ],
     components: {
       securitySchemes: {

@@ -1,0 +1,389 @@
+paths:
+  /laundryService:
+    post:
+      tags:
+        - Laundry Services
+      summary: Create a new laundry service
+      description: Creates a new laundry service with slug, icon, and display order
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLaundryService"
+      responses:
+        "200":
+          description: Laundry service created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/SuccessResponse"
+              example:
+                success: true
+                statusCode: 200
+                message: "Successfully created laundry service"
+                data:
+                  _id: "67a1b2c3d4e5f67890abcdef"
+                  name: "Express Wash"
+                  slug: "express-wash"
+                  icon: "https://cdn.example.com/icons/wash.svg"
+                  description: "Same-day wash & fold service"
+                  shortDescription: "Fast wash in 4 hours"
+                  warnings: "No leather or silk"
+                  isActive: true
+                  displayOrder: 10
+                  createdAt: "2025-04-05T10:00:00.000Z"
+                  updatedAt: "2025-04-05T10:00:00.000Z"
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    get:
+      tags:
+        - Laundry Services
+      summary: Get all laundry services
+      description: Retrieve paginated list with search, filter, and sort
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          description: Search in name, description, shortDescription, or slug
+          schema:
+            type: string
+          example: wash
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          example: 10
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [name, displayOrder, createdAt, updatedAt]
+            default: displayOrder
+          example: displayOrder
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          example: asc
+        - name: isActive
+          in: query
+          description: Filter by active status
+          schema:
+            type: boolean
+          example: true
+        - name: displayOrder
+          in: query
+          description: Exact match on displayOrder
+          schema:
+            type: integer
+          example: 10
+
+      responses:
+        "200":
+          description: Laundry services retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully retrived laundry services"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/LaundryService"
+                  pagination:
+                    $ref: "#/components/schemas/PaginationMeta"
+              example:
+                success: true
+                statusCode: 200
+                message: "Successfully retrived laundry services"
+                data:
+                  - _id: "67a1b2c3d4e5f67890abcdef"
+                    name: "Express Wash"
+                    slug: "express-wash"
+                    isActive: true
+                    displayOrder: 10
+                pagination:
+                  currentPage: 1
+                  limit: 10
+                  total: 25
+                  totalPages: 3
+                  hasNextPage: true
+                  hasPrevPage: false
+
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /laundryService/{id}:
+    patch:
+      tags:
+        - Laundry Services
+      summary: Update a laundry service
+      description: Partially update any field of a laundry service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Laundry service ID
+          example: 67a1b2c3d4e5f67890abcdef
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLaundryService"
+      responses:
+        "200":
+          description: Laundry service updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/SuccessResponse"
+              example:
+                success: true
+                statusCode: 200
+                message: "Successfully updated laundry service"
+                data:
+                  _id: "67a1b2c3d4e5f67890abcdef"
+                  name: "Premium Dry Clean"
+                  isActive: false
+                  displayOrder: 5
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          description: Not Found - Service not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                success: false
+                statusCode: 404
+                message: "Not Found"
+                error: "Laundry service not found"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+components:
+  schemas:
+    CreateLaundryService:
+      type: object
+      required:
+        - name
+        - slug
+        - isActive
+      properties:
+        name:
+          type: string
+          minLength: 1
+          example: "Express Wash"
+        slug:
+          type: string
+          pattern: ^[a-z0-9-]+$
+          description: URL-friendly unique identifier
+          example: express-wash
+        icon:
+          type: string
+          format: uri
+          example: https://cdn.example.com/icons/wash.svg
+        description:
+          type: string
+          example: Full wash and fold service completed within 4 hours
+        shortDescription:
+          type: string
+          maxLength: 100
+          example: Fast wash in 4 hours
+        warnings:
+          type: string
+          example: Do not include leather, silk, or suede items
+        isActive:
+          type: boolean
+          example: true
+        displayOrder:
+          type: integer
+          minimum: 0
+          example: 10
+
+    UpdateLaundryService:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          example: Premium Dry Clean
+        icon:
+          type: string
+          format: uri
+        description:
+          type: string
+        shortDescription:
+          type: string
+        warnings:
+          type: string
+        isActive:
+          type: boolean
+        displayOrder:
+          type: integer
+          minimum: 0
+
+    LaundryService:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 67a1b2c3d4e5f67890abcdef
+        name:
+          type: string
+          example: Express Wash
+        slug:
+          type: string
+          example: express-wash
+        icon:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        shortDescription:
+          type: string
+          nullable: true
+        warnings:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+          example: true
+        displayOrder:
+          type: integer
+          example: 10
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PaginationMeta:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          example: 25
+        totalPages:
+          type: integer
+          example: 3
+        hasNextPage:
+          type: boolean
+          example: true
+        hasPrevPage:
+          type: boolean
+          example: false
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        statusCode:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: Bad Request
+        error:
+          type: string
+          example: Slug must contain only lowercase letters, numbers, and hyphens
+
+  responses:
+    SuccessResponse:
+      description: Standard success envelope
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              statusCode:
+                type: integer
+              message:
+                type: string
+              data:
+                type: object
+
+    BadRequest:
+      description: Validation or client error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    Unauthorized:
+      description: Missing or invalid token
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            success: false
+            statusCode: 401
+            message: Unauthorized
+            error: Invalid token
+
+    Forbidden:
+      description: User lacks permission
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            success: false
+            statusCode: 403
+            message: Forbidden
+            error: Insufficient permissions for laundryService:create

@@ -14,6 +14,14 @@ const laundryServiceSchema = new Schema<ILaundryService>(
   },
   { timestamps: true }
 );
+
+laundryServiceSchema.index({
+  name: "text",
+  description: "text",
+  shortDescription: "text",
+  slug: "text",
+});
+
 export const LaundryService = model<ILaundryService>(
   "LaundryService",
   laundryServiceSchema
