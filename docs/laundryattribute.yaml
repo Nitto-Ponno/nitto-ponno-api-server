@@ -1,0 +1,527 @@
+paths:
+  /laundryAttribute:
+    get:
+      tags:
+        - Laundry Attributes
+      summary: Get all laundry attributes
+      description: Retrieve all attributes with pagination and search capabilities
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+          example: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Number of items per page (max 100)
+          example: 10
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search across name, description, slug, and option values
+          example: "stain"
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [name, slug, createdAt, updatedAt]
+            default: createdAt
+          description: Field to sort by
+          example: "name"
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: Sort order
+          example: "asc"
+      responses:
+        "200":
+          description: Attributes retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully retrieved laundry attributes"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/LaundryAttribute"
+                  pagination:
+                    type: object
+                    properties:
+                      currentPage:
+                        type: integer
+                        example: 1
+                      totalPages:
+                        type: integer
+                        example: 5
+                      totalItems:
+                        type: integer
+                        example: 47
+                      itemsPerPage:
+                        type: integer
+                        example: 10
+                      hasNextPage:
+                        type: boolean
+                        example: true
+                      hasPrevPage:
+                        type: boolean
+                        example: false
+              example:
+                success: true
+                statusCode: 200
+                message: "Successfully retrieved laundry attributes"
+                data:
+                  - _id: "67c3d4e5f67890abcdef1234"
+                    name: "Stain Level"
+                    slug: "stain-level"
+                    description: "Indicates severity of stains for treatment priority"
+                    options:
+                      - value: "Light"
+                        id: "f1a2b3c4-d5e6-7890-abcd-ef1234567890"
+                      - value: "Medium"
+                        id: "f2b3c4d5-e6f7-8901-bcde-f23456789012"
+                    createdAt: "2025-04-05T14:30:00.000Z"
+                    updatedAt: "2025-04-05T14:30:00.000Z"
+                  - _id: "67c3d4e5f67890abcdef5678"
+                    name: "Fold Style"
+                    slug: "fold-style"
+                    description: "Preferred folding method for clothes"
+                    options:
+                      - value: "Neat Stack"
+                        id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                      - value: "Hanger"
+                        id: "b2c3d4e5-f6g7-8901-bcde-f23456789012"
+                    createdAt: "2025-04-05T15:00:00.000Z"
+                    updatedAt: "2025-04-05T15:00:00.000Z"
+                pagination:
+                  currentPage: 1
+                  totalPages: 5
+                  totalItems: 47
+                  itemsPerPage: 10
+                  hasNextPage: true
+                  hasPrevPage: false
+
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+    post:
+      tags:
+        - Laundry Attributes
+      summary: Create a new laundry attribute
+      description: |
+        Creates a configurable attribute with multiple options.
+        Each option gets a UUID. Slug auto-generated from name if not provided.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLaundryAttribute"
+            example:
+              name: "Stain Level"
+              description: "Indicates severity of stains for treatment priority"
+              slug: "stain-level"
+              options:
+                - value: "Light"
+                - value: "Medium"
+                - value: "Heavy"
+                - value: "Extreme"
+      responses:
+        "200":
+          description: Laundry attribute created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/SuccessResponse"
+              example:
+                success: true
+                statusCode: 200
+                message: "Successfully created laundry attribute"
+                data:
+                  _id: "67c3d4e5f67890abcdef1234"
+                  name: "Stain Level"
+                  slug: "stain-level"
+                  description: "Indicates severity of stains for treatment priority"
+                  options:
+                    - value: "Light"
+                      id: "f1a2b3c4-d5e6-7890-abcd-ef1234567890"
+                    - value: "Medium"
+                      id: "f2b3c4d5-e6f7-8901-bcde-f23456789012"
+                    - value: "Heavy"
+                      id: "f3c4d5e6-f7g8-9012-cdef-345678901234"
+                    - value: "Extreme"
+                      id: "f4d5e6f7-g8h9-0123-def0-456789012345"
+                  createdAt: "2025-04-05T14:30:00.000Z"
+                  updatedAt: "2025-04-05T14:30:00.000Z"
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /laundryAttribute/{id}:
+    get:
+      tags:
+        - Laundry Attributes
+      summary: Get laundry attribute by ID
+      description: Retrieve a single attribute with its options
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 67c3d4e5f67890abcdef1234
+      responses:
+        "200":
+          description: Attribute retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/SuccessResponse"
+              example:
+                success: true
+                statusCode: 200
+                message: "Successfully retrived laundry attribute"
+                data:
+                  _id: "67c3d4e5f67890abcdef1234"
+                  name: "Stain Level"
+                  slug: "stain-level"
+                  options:
+                    - value: "Light"
+                      id: "f1a2b3c4-d5e6-7890-abcd-ef1234567890"
+                  createdAt: "2025-04-05T14:30:00.000Z"
+
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    patch:
+      tags:
+        - Laundry Attributes
+      summary: Update laundry attribute
+      description: |
+        Partially update attribute. Options are merged intelligently:
+        - Existing options by `value` keep their `id`
+        - New options get new UUIDs
+        - Removed options are deleted
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 67c3d4e5f67890abcdef1234
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLaundryAttribute"
+            example:
+              name: "Stain Intensity"
+              options:
+                - value: "Light"
+                - value: "Medium"
+                - value: "Critical"
+      responses:
+        "200":
+          description: Attribute updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/SuccessResponse"
+              example:
+                success: true
+                statusCode: 200
+                message: "Successfully updated laundry attribute"
+                data:
+                  _id: "67c3d4e5f67890abcdef1234"
+                  name: "Stain Intensity"
+                  slug: "stain-intensity"
+                  options:
+                    - value: "Light"
+                      id: "f1a2b3c4-d5e6-7890-abcd-ef1234567890"
+                    - value: "Medium"
+                      id: "f2b3c4d5-e6f7-8901-bcde-f23456789012"
+                    - value: "Critical"
+                      id: "new-uuid-here-1234-5678-9012"
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      tags:
+        - Laundry Attributes
+      summary: Delete laundry attribute
+      description: Permanently removes the attribute (soft-delete recommended in future)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 67c3d4e5f67890abcdef1234
+      responses:
+        "200":
+          description: Attribute deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/SuccessResponse"
+              example:
+                success: true
+                statusCode: 200
+                message: "Successfully deleted laundry attribute"
+                data: null
+
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+components:
+  schemas:
+    CreateLaundryAttribute:
+      type: object
+      required:
+        - name
+        - description
+        - options
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "Fold Style"
+        description:
+          type: string
+          minLength: 10
+          maxLength: 200
+          example: "Preferred folding method for clothes"
+        slug:
+          type: string
+          pattern: ^[a-z0-9-]+$
+          description: Unique identifier. Auto-generated if omitted.
+          example: "fold-style"
+        options:
+          type: array
+          minItems: 1
+          maxItems: 30
+          items:
+            type: object
+            required:
+              - value
+            properties:
+              value:
+                type: string
+                minLength: 1
+                maxLength: 50
+                example: "Neat Stack"
+
+    UpdateLaundryAttribute:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 50
+        description:
+          type: string
+          minLength: 10
+          maxLength: 200
+        slug:
+          type: string
+          pattern: ^[a-z0-9-]+$
+        options:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+                minLength: 1
+                maxLength: 50
+              id:
+                type: string
+                format: uuid
+                description: Optional. Reuse existing ID if updating known option.
+
+    LaundryAttribute:
+      allOf:
+        - $ref: "#/components/schemas/CreateLaundryAttribute"
+        - type: object
+          required:
+            - _id
+            - slug
+            - options
+          properties:
+            _id:
+              type: string
+              example: "67c3d4e5f67890abcdef1234"
+            slug:
+              type: string
+              readOnly: true
+            options:
+              type: array
+              items:
+                type: object
+                required:
+                  - value
+                  - id
+                properties:
+                  value:
+                    type: string
+                  id:
+                    type: string
+                    format: uuid
+                    readOnly: true
+            createdAt:
+              type: string
+              format: date-time
+              readOnly: true
+            updatedAt:
+              type: string
+              format: date-time
+              readOnly: true
+
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - statusCode
+        - message
+      properties:
+        success:
+          type: boolean
+          example: false
+        statusCode:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "Bad Request"
+        error:
+          type: string
+          example: "Validation failed"
+
+  responses:
+    SuccessResponse:
+      description: Standard success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              statusCode:
+                type: integer
+              message:
+                type: string
+              data:
+                type: object
+
+    BadRequest:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    Unauthorized:
+      description: Invalid or missing token
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            success: false
+            statusCode: 401
+            message: Unauthorized
+            error: "Invalid token"
+
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            success: false
+            statusCode: 403
+            message: Forbidden
+            error: "Insufficient permissions for laundryAttribute:create"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            success: false
+            statusCode: 404
+            message: "Not Found"
+            error: "Attribute with id 67c3d4e5f67890abcdef1234 not found"
+
+    Conflict:
+      description: Duplicate slug
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            success: false
+            statusCode: 409
+            message: Conflict
+            error: "E11000 duplicate key error collection: laundryattributes index: slug_1 dup key"

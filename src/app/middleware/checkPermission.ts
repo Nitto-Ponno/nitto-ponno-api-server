@@ -13,8 +13,6 @@ const checkPermission = (feature: string, accessType: TAccessType) => {
 
     const userExist = await User.isUserExistsByEmail(user?.email);
 
-    console.log({ userExist });
-
     if (!userExist) {
       throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized user request");
     }

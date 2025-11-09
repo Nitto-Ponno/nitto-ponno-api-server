@@ -36,6 +36,11 @@ const swaggerOptions: swaggerJsDoc.Options = {
         description:
           " Manage laundry service types (wash, dry-clean, iron, etc.)",
       },
+      {
+        name: "Laundry Attributes",
+        description:
+          "Manage reusable laundry attribute types (e.g., Fabric Care, Fold Style) with selectable options",
+      },
     ],
     components: {
       securitySchemes: {

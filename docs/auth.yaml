@@ -23,11 +23,11 @@ paths:
                 email:
                   type: string
                   format: email
-                  example: user@example.com
+                  example: khanmahmud994@gmail.com
                 password:
                   type: string
                   minLength: 6
-                  example: password123
+                  example: Mahmud@994
                 phoneNumber:
                   type: string
                   example: +1234567890
@@ -174,7 +174,7 @@ paths:
                 email:
                   type: string
                   format: email
-                  example: user@example.com
+                  example: khanmahmud994@gmail.com
       responses:
         "200":
           description: OTP sent successfully
@@ -221,11 +221,11 @@ paths:
                 email:
                   type: string
                   format: email
-                  example: user@example.com
+                  example: khanmahmud994@gmail.com
                 password:
                   type: string
                   minLength: 6
-                  example: newpassword123
+                  example: newMahmud@994
                 otp:
                   type: string
                   pattern: '^\d{6}$'
@@ -274,7 +274,7 @@ paths:
                 email:
                   type: string
                   format: email
-                  example: user@example.com
+                  example: khanmahmud994@gmail.com
       responses:
         "200":
           description: OTP sent successfully
@@ -320,7 +320,7 @@ paths:
                 email:
                   type: string
                   format: email
-                  example: user@example.com
+                  example: khanmahmud994@gmail.com
                 otp:
                   type: string
                   pattern: '^\d{6}$'
@@ -423,11 +423,11 @@ paths:
                 newPassword:
                   type: string
                   minLength: 6
-                  example: newpassword123
+                  example: newMahmud@994
                 currentPassword:
                   type: string
                   minLength: 6
-                  example: oldpassword123
+                  example: oldMahmud@994
       responses:
         "200":
           description: Password updated successfully
@@ -476,11 +476,11 @@ components:
         email:
           type: string
           format: email
-          example: user@example.com
+          example: khanmahmud994@gmail.com
         password:
           type: string
           minLength: 6
-          example: password123
+          example: Mahmud@994
     User:
       type: object
       properties:
@@ -490,7 +490,7 @@ components:
         email:
           type: string
           format: email
-          example: user@example.com
+          example: khanmahmud994@gmail.com
         name:
           type: object
           properties:
