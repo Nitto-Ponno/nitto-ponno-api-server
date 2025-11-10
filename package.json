@@ -29,6 +29,9 @@
     "typescript-eslint": "^8.44.1"
   },
   "dependencies": {
+    "@types/amqplib": "^0.10.8",
+    "@types/nodemailer": "^7.0.3",
+    "amqplib": "^0.10.9",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -38,6 +41,7 @@
     "http-status": "^2.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.2",
+    "nodemailer": "^7.0.10",
     "slugify": "^1.6.6",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",

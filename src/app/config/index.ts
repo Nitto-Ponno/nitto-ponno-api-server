@@ -17,4 +17,12 @@ export default {
   access_token_expires_in: process.env.JWT_ACCESS_EXPIRES_IN as ms.StringValue,
   refresh_token_expires_in: process.env
     .JWT_REFRESH_EXPIRES_IN as ms.StringValue,
+  smtp_host: process.env.SMTP_HOST,
+  smtp_port: process.env.SMTP_PORT,
+  smtp_encryption: process.env.SMTP_ENCRYPTION,
+  smtp_user_name: process.env.SMTP_USER_NAME,
+  smtp_password: process.env.SMTP_PASSWORD,
+  smtp_from_email: process.env.SMTP_FROM_EMAIL,
+  smtp_from_name: process.env.SMTP_FROM_NAME,
+  rabbitmq_url: process.env.RABBITMQ_URL,
 };
