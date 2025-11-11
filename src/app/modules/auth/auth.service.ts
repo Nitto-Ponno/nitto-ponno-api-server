@@ -9,8 +9,7 @@ import mongoose from "mongoose";
 import { TUser } from "../user/user.interface";
 import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import varifyToken from "../../utils/verifyToken";
-import ms from "ms";
-// import { EmailJobName, emailQueue } from "../../queues/email.queue";
+import { EmailJobName, emailQueue } from "../../queues/email.queue";
 
 const generateOTP = () => {
   // Declare a digits variable
@@ -195,10 +194,10 @@ const forgotPasswordService = async (email: string) => {
 
   await User.findByIdAndUpdate(user._id, { otp: otpToken });
 
-  // await emailQueue.add(EmailJobName.sendResetPasswordEmail, {
-  //   user,
-  //   opt: otpCode,
-  // });
+  await emailQueue.add(EmailJobName.sendResetPasswordEmail, {
+    user,
+    opt: otpCode,
+  });
 };
 
 const resetPasswordService = async (
@@ -281,10 +280,10 @@ const SendVerificationEmailService = async (email: string) => {
 
   await User.findByIdAndUpdate(user._id, { otp: otpToken });
 
-  // await emailQueue.add(EmailJobName.sendVerificationEmail, {
-  //   user,
-  //   opt: otpCode,
-  // });
+  await emailQueue.add(EmailJobName.sendVerificationEmail, {
+    user,
+    opt: otpCode,
+  });
 };
 
 const verifyEmailService = async (email: string, otp: string | undefined) => {
@@ -458,10 +457,13 @@ const createCustomerIntoDB = async (customer: TUser) => {
       throw new AppError(httpStatus.CONFLICT, "failed to register account");
     }
 
-    // await emailQueue.add(EmailJobName.sendVerificationEmail, {
-    //   opt: otpCode,
-    //   user,
-    // });
+    await emailQueue.add(EmailJobName.sendVerificationEmail, {
+      opt: otpCode,
+      user: {
+        email: user.email as string,
+        name: user.name,
+      },
+    });
 
     await session.commitTransaction();
     await session.endSession();
