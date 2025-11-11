@@ -18,11 +18,7 @@ export interface TUser {
   _id: Types.ObjectId;
   password: string;
   isActive?: boolean;
-<<<<<<< Updated upstream
-  role: string;
-=======
   role: "customer" | string;
->>>>>>> Stashed changes
   isVerified?: boolean;
   userType: "customer" | "admin";
   isMasterAdmin?: boolean;
