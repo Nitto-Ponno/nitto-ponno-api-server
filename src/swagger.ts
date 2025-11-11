@@ -41,6 +41,10 @@ const swaggerOptions: swaggerJsDoc.Options = {
         description:
           "Manage reusable laundry attribute types (e.g., Fabric Care, Fold Style) with selectable options",
       },
+      {
+        name: "Product",
+        description: "Product management endpoints with variations support",
+      },
     ],
     components: {
       securitySchemes: {

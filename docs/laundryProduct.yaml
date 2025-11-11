@@ -1,0 +1,502 @@
+paths:
+  /laundryProduct:
+    post:
+      tags:
+        - Product
+      summary: Create a new product
+      description: Creates a new product with variations. Requires create permission.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductRequest"
+      responses:
+        "201":
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: Product created successfully
+                  data:
+                    $ref: "#/components/schemas/Product"
+        "401":
+          description: Unauthorized - Invalid token or insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "400":
+          description: Bad Request - Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    get:
+      tags:
+        - Product
+      summary: Get all products
+      description: Retrieves products with pagination, search, price range, and service filtering. No auth required.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Items per page
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search in name or description
+        - name: serviceId
+          in: query
+          schema:
+            type: string
+          description: Filter by service ID
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+          description: Minimum base price
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+          description: Maximum base price
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [name, price, createdAt]
+            default: createdAt
+          description: Sort field
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: Sort order
+      responses:
+        "200":
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Products retrieved successfully
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                        example: 1
+                      limit:
+                        type: integer
+                        example: 10
+                      total:
+                        type: integer
+                        example: 42
+                      totalPages:
+                        type: integer
+                        example: 5
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Product"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /laundryProduct/{id}:
+    get:
+      tags:
+        - Product
+      summary: Get single product
+      description: Retrieves a product with populated services, attributes, and variations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 66f8a1b2c3d4e5f6a7b8c9d0
+      responses:
+        "200":
+          description: Product retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Product retrieved successfully
+                  data:
+                    $ref: "#/components/schemas/Product"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    patch:
+      tags:
+        - Product
+      summary: Update product
+      description: Partially update a product and its variations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 66f8a1b2c3d4e5f6a7b8c9d0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProductRequest"
+      responses:
+        "200":
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Product updated successfully
+                  data:
+                    $ref: "#/components/schemas/Product"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      tags:
+        - Product
+      summary: Delete product (soft delete)
+      description: Marks product as deleted
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 66f8a1b2c3d4e5f6a7b8c9d0
+      responses:
+        "200":
+          description: Product deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Product deleted successfully
+                  data:
+                    $ref: "#/components/schemas/Product"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    Discount:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [percent, flat]
+          example: percent
+        value:
+          type: number
+          minimum: 0
+          example: 15
+      example:
+        type: percent
+        value: 15
+
+    AttributeValue:
+      type: object
+      properties:
+        attributeId:
+          type: string
+          example: 66f8a1b2c3d4e5f6a7b8c9d1
+        value:
+          type: string
+          example: Red
+      required:
+        - attributeId
+        - value
+
+    ProductVariation:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 66f8a1b2c3d4e5f6a7b8c9d2
+        serviceId:
+          type: string
+          example: 66f8a1b2c3d4e5f6a7b8c9d3
+        attributeValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/AttributeValue"
+        price:
+          type: number
+          example: 1599
+        discount:
+          $ref: "#/components/schemas/Discount"
+        sku:
+          type: string
+          example: TSH-RED-M
+        isAvailable:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 66f8a1b2c3d4e5f6a7b8c9d0
+        name:
+          type: string
+          example: Premium Cotton T-Shirt
+        description:
+          type: string
+          example: Soft and comfortable 100% cotton t-shirt
+        price:
+          type: number
+          example: 1800
+        discount:
+          $ref: "#/components/schemas/Discount"
+        services:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+              name:
+                type: string
+                example: Wash & Fold
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+              name:
+                type: string
+                example: Color
+        variations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductVariation"
+        isDeleted:
+          type: boolean
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-11-11T15:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-11-11T15:00:00.000Z"
+      example:
+        _id: 66f8a1b2c3d4e5f6a7b8c9d0
+        name: Premium Cotton T-Shirt
+        price: 1800
+        discount:
+          type: percent
+          value: 10
+        variations:
+          - serviceId: 66f8a1b2c3d4e5f6a7b8c9d3
+            attributeValues:
+              - attributeId: 66f8a1b2c3d4e5f6a7b8c9d1
+                value: Red
+              - attributeId: 66f8a1b2c3d4e5f6a7b8c9d4
+                value: M
+            price: 1599
+            sku: TSH-RED-M
+
+    CreateProductRequest:
+      type: object
+      required:
+        - name
+        - description
+        - price
+        - discount
+        - services
+        - attributes
+        - variations
+      properties:
+        name:
+          type: string
+          example: Premium Cotton T-Shirt
+        description:
+          type: string
+          example: Soft and comfortable 100% cotton t-shirt
+        price:
+          type: number
+          example: 1800
+        discount:
+          $ref: "#/components/schemas/Discount"
+        services:
+          type: array
+          items:
+            type: string
+          example:
+            - 66f8a1b2c3d4e5f6a7b8c9d3
+            - 66f8a1b2c3d4e5f6a7b8c9d5
+        attributes:
+          type: array
+          items:
+            type: string
+          example:
+            - 66f8a1b2c3d4e5f6a7b8c9d1
+            - 66f8a1b2c3d4e5f6a7b8c9d4
+        variations:
+          type: array
+          items:
+            type: object
+            properties:
+              serviceId:
+                type: string
+              attributeValues:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AttributeValue"
+              price:
+                type: number
+              discount:
+                $ref: "#/components/schemas/Discount"
+              sku:
+                type: string
+              isAvailable:
+                type: boolean
+
+    UpdateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        discount:
+          $ref: "#/components/schemas/Discount"
+        services:
+          type: array
+          items:
+            type: string
+        attributes:
+          type: array
+          items:
+            type: string
+        variations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductVariation"
