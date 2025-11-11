@@ -6,6 +6,7 @@ import { RolesRoutes } from "../modules/roles/roles.routes";
 import { CategoryRoutes } from "../modules/category/category.route";
 import LaundryServiceRoutes from "../modules/laundryservice/laundryservice.routes";
 import { LAttributeRoutes } from "../modules/luandryAttributes/luandryAttributes.routes";
+import { ProductRoutes } from "../modules/laundryProduct/luandryProduct.routes";
 
 const router = Router();
 
@@ -19,6 +20,7 @@ const moduleRoutes: {
   { path: "/category", route: CategoryRoutes },
   { path: "/laundryService", route: LaundryServiceRoutes },
   { path: "/laundryAttribute", route: LAttributeRoutes },
+  { path: "/laundryProduct", route: ProductRoutes },
 ];
 
 moduleRoutes.forEach((route) => {
