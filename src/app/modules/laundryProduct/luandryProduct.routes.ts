@@ -7,12 +7,14 @@ import {
   UpdateProductSchema,
 } from "./luandryProduct.validation";
 import { ProductController } from "./luandryProduct.contoller";
+import validateAuth from "../../middleware/auth";
 
 const router = Router();
 
 // CREATE
 router.post(
   "/",
+  validateAuth,
   checkPermission(EAppFeatures.laundryProduct, "create"),
   validateRequest(CreateProductSchema),
   ProductController.createProduct
@@ -31,6 +33,7 @@ router.get(
 // UPDATE
 router.patch(
   "/:id",
+  validateAuth,
   checkPermission(EAppFeatures.laundryProduct, "update"),
   validateRequest(UpdateProductSchema),
   ProductController.updateProduct
@@ -39,6 +42,7 @@ router.patch(
 // DELETE (soft)
 router.delete(
   "/:id",
+  validateAuth,
   checkPermission(EAppFeatures.laundryProduct, "delete"),
   ProductController.deleteProduct
 );
