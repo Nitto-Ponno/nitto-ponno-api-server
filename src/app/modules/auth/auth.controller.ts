@@ -12,7 +12,7 @@ const adminLogin = catchAsync(async (req, res) => {
 
   const { refreshToken, accessToken, isVerified } = result;
 
-  res.cookie("gadget_grid_refresh_token", refreshToken, {
+  res.cookie("nitto_ponno_refresh_token", refreshToken, {
     secure: config.node_environment !== "development",
   });
 
@@ -36,11 +36,11 @@ const userLogin = catchAsync(async (req, res) => {
 
   const { refreshToken, accessToken, isVerified } = result;
 
-  res.cookie("gadget_grid_refresh_token", refreshToken, {
+  res.cookie("nitto_ponno_refresh_token", refreshToken, {
     secure: config.node_environment !== "development",
   });
 
-  res.cookie("gadget_grid_access_token", accessToken, {
+  res.cookie("nitto_ponno_access_token", accessToken, {
     secure: config.node_environment !== "development",
   });
 
@@ -59,9 +59,9 @@ const userLogin = catchAsync(async (req, res) => {
 });
 
 const refreshToken = catchAsync(async (req, res) => {
-  const { gadget_grid_refresh_token } = req.cookies;
+  const { nitto_ponno_refresh_token } = req.cookies;
 
-  const result = await AuthServices.refreshToken(gadget_grid_refresh_token);
+  const result = await AuthServices.refreshToken(nitto_ponno_refresh_token);
 
   sendResponse(res, {
     success: true,
@@ -121,7 +121,7 @@ const verifyEmail = catchAsync(async (req, res) => {
 
   const { refreshToken } = result;
 
-  res.cookie("gadget_grid_refresh_token", refreshToken, {
+  res.cookie("nitto_ponno_refresh_token", refreshToken, {
     secure: config.node_environment !== "development",
   });
 
