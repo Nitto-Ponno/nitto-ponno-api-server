@@ -7,6 +7,7 @@ import validateAuth from "../../middleware/auth";
 const router = Router();
 
 router.post("/customer-register", AuthController.registerCustomer);
+router.post("/login", AuthController.userLogin);
 
 router.post("/admin-login", AuthController.adminLogin);
 
