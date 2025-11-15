@@ -229,7 +229,8 @@ const QUEUE_NAME = "email_queue";
 
 const initializeRabbitMQ = async () => {
   try {
-    const rabbitmqUrl = (config.rabbitmq_url as string) || "amqp://localhost";
+    const rabbitmqUrl =
+      (config.rabbitmq_url as string) || "http://localhost:15672";
     connection = await amqp.connect(rabbitmqUrl);
     if (!connection) {
       throw new Error("Failed to create RabbitMQ connection");
