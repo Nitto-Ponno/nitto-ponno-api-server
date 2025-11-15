@@ -131,7 +131,6 @@ const productSchema = new Schema<ILProduct & Document>(
 
 // Indexes for better query performance
 productSchema.index({ name: "text", description: "text" });
-productSchema.index({ "variations.sku": 1 });
 
 // Virtual: calculated final price for product (after discount)
 productSchema.virtual("finalPrice").get(function () {
