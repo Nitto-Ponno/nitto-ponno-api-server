@@ -34,14 +34,14 @@ const createAdminIntoDB = async (admin: TUser) => {
       const deleteUser = await User.findOneAndDelete({ email: admin.email });
 
       if (!deleteUser) {
-        throw new AppError(httpStatus.CONFLICT, "failed to create user");
+        throw new AppError(httpStatus.BAD_REQUEST, "failed to create user");
       }
     }
 
     const userRes = await User.create(user);
 
     if (!userRes) {
-      throw new AppError(httpStatus.CONFLICT, "failed to create user");
+      throw new AppError(httpStatus.BAD_REQUEST, "failed to create user");
     }
 
     await session.commitTransaction();
@@ -52,7 +52,7 @@ const createAdminIntoDB = async (admin: TUser) => {
     await session.abortTransaction();
     await session.endSession();
     throw new AppError(
-      httpStatus.CONFLICT,
+      httpStatus.BAD_REQUEST,
       err instanceof AppError ? err?.message : "Failed to create user"
     );
   }
@@ -83,11 +83,11 @@ const getSingleUserFromDB = async (id: string) => {
   ]);
 
   if (!userData) {
-    throw new AppError(httpStatus.CONFLICT, "Failed to get user data");
+    throw new AppError(httpStatus.BAD_REQUEST, "Failed to get user data");
   }
 
   if (userData.isDeleted) {
-    throw new AppError(httpStatus.CONFLICT, "User was deleted");
+    throw new AppError(httpStatus.BAD_REQUEST, "User was deleted");
   }
 
   return userData;
@@ -99,14 +99,14 @@ const deleteUserFromDB = async (
   authUserEmail: string
 ) => {
   if (!userId) {
-    throw new AppError(httpStatus.CONFLICT, "User not found");
+    throw new AppError(httpStatus.BAD_REQUEST, "User not found");
   }
 
   const user: TUser | null = await User.findById(userId);
 
   if (user?.email === authUserEmail) {
     throw new AppError(
-      httpStatus.CONFLICT,
+      httpStatus.BAD_REQUEST,
       "You can't delete your own account"
     );
   }
@@ -121,7 +121,7 @@ const deleteUserFromDB = async (
       { new: true }
     );
     if (!deletedUser) {
-      throw new AppError(httpStatus.CONFLICT, "Failed to delete user");
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to delete user");
     }
   } catch (err) {
     await session.abortTransaction();
@@ -129,7 +129,7 @@ const deleteUserFromDB = async (
     if (err instanceof AppError) {
       throw new AppError(err.statusCode, err.message);
     } else {
-      throw new AppError(httpStatus.CONFLICT, "Failed to delete user");
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to delete user");
     }
   }
 };
