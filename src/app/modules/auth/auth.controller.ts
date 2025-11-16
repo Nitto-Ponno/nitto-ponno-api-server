@@ -13,7 +13,7 @@ const adminLogin = catchAsync(async (req, res) => {
   const { refreshToken, accessToken, isVerified } = result;
 
   res.cookie("nitto_ponno_refresh_token", refreshToken, {
-    secure: config.node_environment !== "deveplopment",
+    secure: config.node_environment !== "development",
   });
 
   sendResponse(res, {
@@ -37,11 +37,11 @@ const userLogin = catchAsync(async (req, res) => {
   const { refreshToken, accessToken, isVerified } = result;
 
   res.cookie("nitto_ponno_refresh_token", refreshToken, {
-    secure: config.node_environment !== "deveplopment",
+    secure: config.node_environment !== "development",
   });
 
   res.cookie("nitto_ponno_access_token", accessToken, {
-    secure: config.node_environment !== "deveplopment",
+    secure: config.node_environment !== "development",
   });
 
   sendResponse(res, {
@@ -122,7 +122,7 @@ const verifyEmail = catchAsync(async (req, res) => {
   const { refreshToken } = result;
 
   res.cookie("nitto_ponno_refresh_token", refreshToken, {
-    secure: config.node_environment !== "deveplopment",
+    secure: config.node_environment !== "development",
   });
 
   sendResponse(res, {
