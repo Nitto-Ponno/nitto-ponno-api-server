@@ -26,7 +26,7 @@ const adminLoginFromDB = async (payload: TLoginCredentials) => {
   const userExist = await User.isUserExistsByEmail(payload.email);
 
   if (!userExist) {
-    throw new AppError(httpStatus.CONFLICT, "User does not exist");
+    throw new AppError(httpStatus.BAD_REQUEST, "User does not exist");
   }
 
   if (userExist.userType !== "admin" || userExist.role === "customer") {
@@ -34,7 +34,10 @@ const adminLoginFromDB = async (payload: TLoginCredentials) => {
   }
 
   if (userExist.isDeleted) {
-    throw new AppError(httpStatus.CONFLICT, "Sorry, your account was deleted");
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Sorry, your account was deleted"
+    );
   }
 
   const matchPassword = await User.matchUserPassword(
@@ -43,7 +46,7 @@ const adminLoginFromDB = async (payload: TLoginCredentials) => {
   );
 
   if (!matchPassword) {
-    throw new AppError(httpStatus.CONFLICT, "Wrong password");
+    throw new AppError(httpStatus.BAD_REQUEST, "Wrong password");
   }
 
   const jwtPayload = {
@@ -73,15 +76,18 @@ const userLoginFromDB = async (payload: TLoginCredentials) => {
   const userExist = await User.isUserExistsByEmail(payload.email);
 
   if (!userExist) {
-    throw new AppError(httpStatus.CONFLICT, "Wrong email address");
+    throw new AppError(httpStatus.BAD_REQUEST, "Wrong email address");
   }
 
   if (userExist.role !== "customer") {
-    throw new AppError(httpStatus.CONFLICT, "You are not a customer");
+    throw new AppError(httpStatus.BAD_REQUEST, "You are not a customer");
   }
 
   if (userExist.isDeleted) {
-    throw new AppError(httpStatus.CONFLICT, "Sorry, your account was deleted");
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Sorry, your account was deleted"
+    );
   }
 
   const matchPassword = await User.matchUserPassword(
@@ -90,7 +96,7 @@ const userLoginFromDB = async (payload: TLoginCredentials) => {
   );
 
   if (!matchPassword) {
-    throw new AppError(httpStatus.CONFLICT, "Wrong password");
+    throw new AppError(httpStatus.BAD_REQUEST, "Wrong password");
   }
 
   const jwtPayload = {
@@ -234,7 +240,7 @@ const resetPasswordService = async (
   }
 
   if (decoded.otpCode !== otp) {
-    throw new AppError(httpStatus.CONFLICT, "OTP did not match");
+    throw new AppError(httpStatus.BAD_REQUEST, "OTP did not match");
   }
 
   if (email !== decoded.email) {
@@ -289,7 +295,7 @@ const SendVerificationEmailService = async (email: string) => {
 const verifyEmailService = async (email: string, otp: string | undefined) => {
   if (!otp) {
     throw new AppError(
-      httpStatus.CONFLICT,
+      httpStatus.BAD_REQUEST,
       "Verification OTP is required",
       "unauthorized access request"
     );
@@ -322,7 +328,7 @@ const verifyEmailService = async (email: string, otp: string | undefined) => {
   // const decoded = varifyToken(user.otp, config.otp_secret as string);
 
   if (decoded.otpCode !== otp) {
-    throw new AppError(httpStatus.CONFLICT, "OTP did not match");
+    throw new AppError(httpStatus.BAD_REQUEST, "OTP did not match");
   }
   if (email !== decoded.email) {
     throw new AppError(httpStatus.FORBIDDEN, "Wrong email");
@@ -374,7 +380,7 @@ const updatePasswordService = async (
   );
 
   if (!matchPassword) {
-    throw new AppError(httpStatus.CONFLICT, "Password does not match");
+    throw new AppError(httpStatus.BAD_REQUEST, "Password does not match");
   }
 
   const password = await bcrypt.hash(
@@ -434,7 +440,7 @@ const createCustomerIntoDB = async (customer: TUser) => {
 
     if (customerExist) {
       throw new AppError(
-        httpStatus.CONFLICT,
+        httpStatus.BAD_REQUEST,
         "You are already registered. Try singing in"
       );
     }
@@ -454,7 +460,7 @@ const createCustomerIntoDB = async (customer: TUser) => {
     const userRes = await User.create(user);
 
     if (!userRes) {
-      throw new AppError(httpStatus.CONFLICT, "failed to register account");
+      throw new AppError(httpStatus.BAD_REQUEST, "failed to register account");
     }
 
     await emailQueue.add(EmailJobName.sendVerificationEmail, {
@@ -476,7 +482,7 @@ const createCustomerIntoDB = async (customer: TUser) => {
     await session.abortTransaction();
     await session.endSession();
     throw new AppError(
-      httpStatus.CONFLICT,
+      httpStatus.BAD_REQUEST,
       err instanceof AppError ? err?.message : "Failed to create user"
     );
   }

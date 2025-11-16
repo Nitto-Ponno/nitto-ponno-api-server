@@ -117,7 +117,10 @@ const getAllLaundryServiceFromDB = async (query: Record<string, any>) => {
       data: laundryServices,
     };
   } catch (error: any) {
-    throw new AppError(httpStatus.CONFLICT, "Failed to fetch laundry services");
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Failed to fetch laundry services"
+    );
   }
 };
 

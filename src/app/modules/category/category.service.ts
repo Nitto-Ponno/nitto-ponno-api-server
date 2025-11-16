@@ -19,7 +19,7 @@ const createCategoryIntoDB = async (payload: TCategory, admin: TUser) => {
   });
 
   if (exist) {
-    throw new AppError(httpStatus.CONFLICT, "Category already exist");
+    throw new AppError(httpStatus.BAD_REQUEST, "Category already exist");
   }
 
   const result = await Category.create({ ...payload, parent_id, slug });
@@ -93,7 +93,7 @@ const deleteCategoryFromDB = async (id: string, admin: TUser) => {
     // }
     return result;
   } else {
-    throw new AppError(httpStatus.CONFLICT, "Categoy does not exist");
+    throw new AppError(httpStatus.BAD_REQUEST, "Categoy does not exist");
   }
 };
 
@@ -113,7 +113,7 @@ const updateCategoryIntoDB = async (
     console.log(payload);
 
     if (!update) {
-      throw new AppError(httpStatus.CONFLICT, "Failed to update category");
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to update category");
     }
 
     const result = await Category.findById(id);
@@ -144,7 +144,7 @@ const updateCategoryIntoDB = async (
 
     return result;
   } else {
-    throw new AppError(httpStatus.CONFLICT, "Categoy does not exist");
+    throw new AppError(httpStatus.BAD_REQUEST, "Categoy does not exist");
   }
 };
 
@@ -152,7 +152,7 @@ const getSingleCategoryFromDB = async (id: string) => {
   const result = await Category.findById(id);
 
   if (result === null) {
-    throw new AppError(httpStatus.CONFLICT, "Categoy does not exist");
+    throw new AppError(httpStatus.BAD_REQUEST, "Categoy does not exist");
   }
 
   return result;
