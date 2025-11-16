@@ -26,7 +26,7 @@ const adminLoginFromDB = async (payload: TLoginCredentials) => {
   const userExist = await User.isUserExistsByEmail(payload.email);
 
   if (!userExist) {
-    throw new AppError(httpStatus.BAD_REQUEST, "User does not exist");
+    throw new AppError(httpStatus.BAD_REQUEST, "User does not exist.");
   }
 
   if (userExist.userType !== "admin" || userExist.role === "customer") {
