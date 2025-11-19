@@ -14,6 +14,7 @@ export enum EAppFeatures {
   laundryService = "laundryService",
   laundryAttribute = "laundryAttribute",
   laundryProduct = "laundryProduct",
+  laundryOrder = "laundryOrder",
 }
 
 export interface TPermission {
