@@ -1,0 +1,599 @@
+openapi: 3.0.0
+info:
+  title: Laundry Order Management API
+  version: 1.0.0
+  description: API for managing laundry pickup and delivery orders
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+  - url: https://api.yourdomain.com
+    description: Production server
+
+tags:
+  - name: Orders
+    description: Order management for laundry pickup & delivery service
+
+paths:
+  /orders:
+    post:
+      tags:
+        - Orders
+      summary: Place a new order
+      description: Customer creates a laundry order with items, addresses, and preferred pickup time
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrderRequest"
+      responses:
+        "201":
+          description: Order placed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+              example:
+                success: true
+                statusCode: 201
+                message: Order placed successfully
+                data:
+                  orderId: LAUNDRY-2025-00001
+                  status: confirmed
+                  totalAmount: 890
+                  paymentMethod: cod
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          description: Validation or business logic error (e.g. slot not available)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    get:
+      tags:
+        - Orders
+      summary: Get all orders (Admin)
+      description: Admin panel - retrieve all orders with powerful filters
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              [
+                pending,
+                confirmed,
+                picked_up,
+                in_process,
+                delivered,
+                cancelled,
+                refunded,
+              ]
+        - name: paymentMethod
+          in: query
+          schema:
+            type: string
+            enum: [cod, online, wallet]
+        - name: search
+          in: query
+          description: Search by orderId, customer name or phone
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          description: Filter orders from date (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Filter orders until date (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: All orders retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Order"
+                      meta:
+                        $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /orders/my:
+    get:
+      tags:
+        - Orders
+      summary: Get customer's own orders
+      description: Returns paginated list of orders belonging to authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, confirmed, picked_up, delivered, cancelled]
+      responses:
+        "200":
+          description: Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Order"
+                      meta:
+                        $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /orders/{id}:
+    get:
+      tags:
+        - Orders
+      summary: Get order by ID
+      description: Retrieve full order details (admin or owner)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Order ID
+      responses:
+        "200":
+          description: Order found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Order"
+              example:
+                success: true
+                statusCode: 200
+                message: Order retrieved successfully
+                data:
+                  _id: "507f1f77bcf86cd799439011"
+                  orderId: "LAUNDRY-2025-00345"
+                  status: "confirmed"
+                  totalAmount: 890
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    patch:
+      tags:
+        - Orders
+      summary: Update order status or assign rider
+      description: Used by admin/staff to move order through workflow
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateOrderRequest"
+      responses:
+        "200":
+          description: Order updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /orders/{id}/cancel:
+    patch:
+      tags:
+        - Orders
+      summary: Cancel an order
+      description: Customer or admin can cancel pending/confirmed orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  example: Changed my mind
+              required:
+                - reason
+      responses:
+        "200":
+          description: Order cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Cannot cancel order in current status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CreateOrderRequest:
+      type: object
+      required:
+        - items
+        - pickupAddress
+        - pickupTime
+        - paymentMethod
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required:
+              - productId
+              - serviceId
+              - quantity
+            properties:
+              productId:
+                type: string
+                description: MongoDB ObjectId of the product
+              serviceId:
+                type: string
+                description: MongoDB ObjectId of the service variant
+              quantity:
+                type: integer
+                minimum: 1
+              attributeValues:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    attributeId:
+                      type: string
+                    optionId:
+                      type: string
+        pickupAddress:
+          $ref: "#/components/schemas/Address"
+        deliveryAddress:
+          $ref: "#/components/schemas/Address"
+        pickupTime:
+          type: string
+          description: Preferred pickup slot (e.g., "2025-04-05 10:00-12:00")
+        specialInstructions:
+          type: string
+          maxLength: 500
+        paymentMethod:
+          type: string
+          enum: [cod, online, wallet]
+        couponCode:
+          type: string
+          description: Optional promo/coupon code
+
+    UpdateOrderRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            [
+              pickup_assigned,
+              picked_up,
+              reached_laundry,
+              in_process,
+              ready_for_delivery,
+              out_for_delivery,
+              delivered,
+            ]
+        pickupRider:
+          type: string
+          description: Rider ID for pickup
+        deliveryRider:
+          type: string
+          description: Rider ID for delivery
+        note:
+          type: string
+          description: Internal note for timeline
+
+    Address:
+      type: object
+      required:
+        - fullAddress
+      properties:
+        fullAddress:
+          type: string
+          minLength: 5
+        apartment:
+          type: string
+        landmark:
+          type: string
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+
+    Order:
+      type: object
+      properties:
+        _id:
+          type: string
+        orderId:
+          type: string
+          example: LAUNDRY-2025-00345
+        user:
+          type: object
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+            phone:
+              type: string
+        status:
+          type: string
+          enum:
+            [
+              pending,
+              confirmed,
+              pickup_assigned,
+              picked_up,
+              reached_laundry,
+              in_process,
+              ready_for_delivery,
+              out_for_delivery,
+              delivered,
+              cancelled,
+            ]
+        totalAmount:
+          type: number
+        paymentMethod:
+          type: string
+          enum: [cod, online, wallet]
+        paymentStatus:
+          type: string
+          enum: [pending, paid, failed, refunded, partially_refunded]
+        pickupAddress:
+          $ref: "#/components/schemas/Address"
+        deliveryAddress:
+          $ref: "#/components/schemas/Address"
+        pickupTime:
+          type: string
+        actualPickupTime:
+          type: string
+          format: date-time
+        actualDeliveryTime:
+          type: string
+          format: date-time
+        pickupRider:
+          type: object
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+            phone:
+              type: string
+        deliveryRider:
+          type: object
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+            phone:
+              type: string
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              productId:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                  name:
+                    type: string
+                  image:
+                    type: string
+              serviceId:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                  name:
+                    type: string
+              quantity:
+                type: integer
+              unitPrice:
+                type: number
+              subtotal:
+                type: number
+        timeline:
+          type: array
+          items:
+            type: object
+            properties:
+              status:
+                type: string
+              timestamp:
+                type: string
+                format: date-time
+              note:
+                type: string
+              rider:
+                type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        statusCode:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        statusCode:
+          type: integer
+        message:
+          type: string
+        error:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Bad Request - Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            success: false
+            statusCode: 400
+            message: Validation error
+            error: Invalid request parameters
+
+    Unauthorized:
+      description: Unauthorized - Invalid or missing token
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            success: false
+            statusCode: 401
+            message: Unauthorized
+            error: Invalid or missing authentication token
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            success: false
+            statusCode: 403
+            message: Forbidden
+            error: You don't have permission to access this resource
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            success: false
+            statusCode: 404
+            message: Not found
+            error: The requested resource was not found
