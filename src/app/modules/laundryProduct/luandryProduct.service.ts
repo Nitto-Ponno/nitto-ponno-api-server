@@ -57,9 +57,8 @@ const getAllProductsFromDB = async (query: TProductQuery) => {
 
   const products = await Product.find(filter)
     .populate("services", "name")
-    .populate("attributes", "name")
+    .populate("attributes", "name options")
     .populate("variations.serviceId", "name")
-    .populate("variations.attributeValues.attributeId", "name -_id")
     .sort({ [sortBy]: sortOrder })
     .skip(skip)
     .limit(limit)
@@ -74,9 +73,8 @@ const getAllProductsFromDB = async (query: TProductQuery) => {
 const getSingleProductFromDB = async (id: string) => {
   const result = await Product.findById(id)
     .populate("services", "name")
-    .populate("attributes", "name")
+    .populate("attributes", "name options")
     .populate("variations.serviceId", "name")
-    .populate("variations.attributeValues.attributeId", "name")
     .select("-__v");
 
   if (!result) throw new Error("Product not found");
@@ -86,9 +84,8 @@ const getSingleProductFromDB = async (id: string) => {
 const getSingleProductBySlugFromDB = async (slug: string) => {
   const result = await Product.findOne({ slug })
     .populate("services", "name")
-    .populate("attributes", "name")
+    .populate("attributes", "name options")
     .populate("variations.serviceId", "name")
-    .populate("variations.attributeValues.attributeId", "name")
     .select("-__v");
 
   if (!result) throw new Error("Product not found");
