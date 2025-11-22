@@ -24,11 +24,7 @@ router.post(
 router.get("/", ProductController.getAllProducts);
 
 // GET SINGLE
-router.get(
-  "/:id",
-  checkPermission(EAppFeatures.laundryProduct, "read"),
-  ProductController.getSingleProduct
-);
+router.get("/:id", ProductController.getSingleProduct);
 
 // UPDATE
 router.patch(
