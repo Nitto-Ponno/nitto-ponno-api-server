@@ -11,38 +11,38 @@ const router = Router();
 // ─── Customer Routes ───
 router.post(
   "/",
-  validateAuth,
+  validateAuth(),
   validateRequest(createOrderSchema),
   OrderController.createOrder
 );
 
-router.get("/my", validateAuth, OrderController.getMyOrders); // User's own orders
+router.get("/my", validateAuth(), OrderController.getMyOrders); // User's own orders
 
 // ─── Admin / Staff Routes ───
 router.get(
   "/",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.laundryOrder, "read"),
   OrderController.getAllOrders // Admin panel: all orders + filters
 );
 
 router.get(
   "/:id",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.laundryOrder, "read"),
   OrderController.getSingleOrder
 );
 
 router.patch(
   "/:id",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.laundryOrder, "update"),
   validateRequest(updateOrderSchema),
   OrderController.updateOrder
 );
 
 // Optional: cancel order (customer or admin)
-router.patch("/:id/cancel", validateAuth, OrderController.cancelOrder);
+router.patch("/:id/cancel", validateAuth(), OrderController.cancelOrder);
 
 const OrderRoutes = router;
 

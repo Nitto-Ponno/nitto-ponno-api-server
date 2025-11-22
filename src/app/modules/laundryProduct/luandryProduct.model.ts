@@ -1,26 +1,5 @@
-import { Schema, model, Document, Types } from "mongoose";
-import {
-  IAttributeValue,
-  ILProduct,
-  IProductVariation,
-} from "./luandryProduct.interface";
-
-// 1. AttributeValue Sub-schema
-const attributeValueSchema = new Schema<IAttributeValue>(
-  {
-    attributeId: {
-      type: Schema.Types.ObjectId,
-      ref: "LaundryAttribute", // assuming you have an Attribute model
-      required: true,
-    },
-    value: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-  },
-  { _id: false } // no need for _id on sub-document
-);
+import { Schema, model, Document } from "mongoose";
+import { ILProduct, IProductVariation } from "./luandryProduct.interface";
 
 // 2. Discount Sub-schema (reused in variation & product)
 const discountSchema = new Schema(
@@ -47,11 +26,6 @@ const productVariationSchema = new Schema<IProductVariation>(
       ref: "LaundryService", // assuming you have a Service model
       required: true,
     },
-    attributeValues: {
-      type: [attributeValueSchema],
-      required: true,
-      validate: [arrayMinLength, "At least one attribute value is required"],
-    },
     price: {
       type: Number,
       required: true,
@@ -76,11 +50,6 @@ const productVariationSchema = new Schema<IProductVariation>(
   { timestamps: true } // adds createdAt & updatedAt for variations
 );
 
-// Custom validator for non-empty array
-function arrayMinLength(val: any[]) {
-  return val.length > 0;
-}
-
 // 4. Main Product Schema
 const productSchema = new Schema<ILProduct & Document>(
   {
@@ -88,6 +57,11 @@ const productSchema = new Schema<ILProduct & Document>(
       type: String,
       required: true,
       trim: true,
+    },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
     },
     description: {
       type: String,

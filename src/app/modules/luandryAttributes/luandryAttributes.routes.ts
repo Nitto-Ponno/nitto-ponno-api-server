@@ -8,33 +8,25 @@ import validateAuth from "../../middleware/auth";
 
 const router = Router();
 
-router.get(
-  "/",
-  checkPermission(EAppFeatures.laundryAttribute, "read"),
-  LAttributeController.getAllLaundryAttributesFromDB
-);
+router.get("/", LAttributeController.getAllLaundryAttributesFromDB);
 router.post(
   "/",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.laundryAttribute, "create"),
   validateRequest(LaundryAttributeValidations.CreateLaundryAttributeSchema),
   LAttributeController.createLaundryAttribute
 );
-router.get(
-  "/:id",
-  checkPermission(EAppFeatures.laundryAttribute, "read"),
-  LAttributeController.getLaundryAttributeById
-);
+router.get("/:id", LAttributeController.getLaundryAttributeById);
 router.patch(
   "/:id",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.laundryAttribute, "update"),
   validateRequest(LaundryAttributeValidations.UpdateLaundryAttributeSchema),
   LAttributeController.updateLaundryAttribute
 );
 router.delete(
   "/:id",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.laundryAttribute, "delete"),
   LAttributeController.deleteLaundryAttribute
 );

@@ -5,6 +5,8 @@ import httpStatus from "http-status";
 import { ProductServices } from "./luandryProduct.service";
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
+  console.log("createing product");
+
   const result = await ProductServices.createProductToDB(req.body);
 
   sendResponse(res, {
@@ -43,6 +45,19 @@ const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getSingleProductByslug = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await ProductServices.getSingleProductBySlugFromDB(id);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Product retrieved successfully",
+      data: result,
+    });
+  }
+);
 
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -71,6 +86,7 @@ const deleteProduct = catchAsync(async (req: Request, res: Response) => {
 export const ProductController = {
   createProduct,
   getAllProducts,
+  getSingleProductByslug,
   getSingleProduct,
   updateProduct,
   deleteProduct,

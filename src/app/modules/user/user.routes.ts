@@ -10,7 +10,7 @@ const router = Router();
 
 router.post(
   "/create-admin",
-  validateAuth,
+  validateAuth(),
   validateRequest(UserValidations.createUserValidationSchema),
   checkPermission(EAppFeatures.user, "create"),
   UserController.createUser
@@ -18,21 +18,21 @@ router.post(
 
 router.get(
   "/admin/get-all",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.user, "read"),
   UserController.getAllUsers
 );
 
 router.delete(
   "/:userId",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.user, "delete"),
   UserController.deleteUser
 );
 
 router.get(
   "/:id",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.user, "read"),
   UserController.getSingleUser
 );

@@ -1,6 +1,7 @@
 import { SortOrder } from "mongoose";
 import { ILProduct } from "./luandryProduct.interface";
 import { Product } from "./luandryProduct.model";
+import slugify from "slugify";
 
 type TProductQuery = {
   page: number;
@@ -14,7 +15,8 @@ type TProductQuery = {
 };
 
 const createProductToDB = async (data: ILProduct) => {
-  const result = await Product.create(data);
+  const slug = slugify(data.name);
+  const result = await Product.create({ ...data, slug });
   return result;
 };
 
@@ -81,6 +83,18 @@ const getSingleProductFromDB = async (id: string) => {
   return result;
 };
 
+const getSingleProductBySlugFromDB = async (slug: string) => {
+  const result = await Product.findOne({ slug })
+    .populate("services", "name")
+    .populate("attributes", "name")
+    .populate("variations.serviceId", "name")
+    .populate("variations.attributeValues.attributeId", "name")
+    .select("-__v");
+
+  if (!result) throw new Error("Product not found");
+  return result;
+};
+
 const updateProductToDB = async (id: string, data: Partial<ILProduct>) => {
   const result = await Product.findByIdAndUpdate(id, data, {
     new: true,
@@ -110,6 +124,7 @@ export const ProductServices = {
   createProductToDB,
   getAllProductsFromDB,
   getSingleProductFromDB,
+  getSingleProductBySlugFromDB,
   updateProductToDB,
   deleteProductFromDB,
 };
