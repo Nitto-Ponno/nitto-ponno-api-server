@@ -19,7 +19,7 @@ const discountSchema = new Schema(
 );
 
 // 3. ProductVariation Schema
-const productVariationSchema = new Schema<IProductVariation>(
+export const productVariationSchema = new Schema<IProductVariation>(
   {
     serviceId: {
       type: Schema.Types.ObjectId,
