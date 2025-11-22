@@ -5,14 +5,8 @@ const DiscountSchema = z.object({
   value: z.number().min(0),
 });
 
-const AttributeValueSchema = z.object({
-  attributeId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId"),
-  value: z.string().min(1),
-});
-
 const ProductVariationSchema = z.object({
   serviceId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid serviceId"),
-  attributeValues: z.array(AttributeValueSchema).min(1),
   price: z.number().positive(),
   discount: DiscountSchema.optional(),
   sku: z.string().optional(),

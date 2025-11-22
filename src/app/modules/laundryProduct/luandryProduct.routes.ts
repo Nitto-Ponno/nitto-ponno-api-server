@@ -14,7 +14,7 @@ const router = Router();
 // CREATE
 router.post(
   "/",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.laundryProduct, "create"),
   validateRequest(CreateProductSchema),
   ProductController.createProduct
@@ -24,16 +24,13 @@ router.post(
 router.get("/", ProductController.getAllProducts);
 
 // GET SINGLE
-router.get(
-  "/:id",
-  checkPermission(EAppFeatures.laundryProduct, "read"),
-  ProductController.getSingleProduct
-);
+router.get("/:id", ProductController.getSingleProduct);
+router.get("/byslug/:slug", ProductController.getSingleProductByslug);
 
 // UPDATE
 router.patch(
   "/:id",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.laundryProduct, "update"),
   validateRequest(UpdateProductSchema),
   ProductController.updateProduct
@@ -42,7 +39,7 @@ router.patch(
 // DELETE (soft)
 router.delete(
   "/:id",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.laundryProduct, "delete"),
   ProductController.deleteProduct
 );

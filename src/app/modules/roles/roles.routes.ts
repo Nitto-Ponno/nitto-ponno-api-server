@@ -10,7 +10,7 @@ const router = Router();
 
 router.post(
   "/create-role",
-  validateAuth,
+  validateAuth(),
   validateRequest(RolesValidations.createRoleValidationSchema),
   checkPermission(EAppFeatures.role, "create"),
   RolesController.createRole
@@ -18,21 +18,21 @@ router.post(
 
 router.get(
   "/get-all",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.role, "read"),
   RolesController.getAllRoles
 );
 
 router.patch(
   "/update-role/:id",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.role, "update"),
   RolesController.updateRole
 );
 
 router.delete(
   "/delete-role/:id",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.role, "delete"),
   RolesController.deleteRole
 );

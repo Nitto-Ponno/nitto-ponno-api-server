@@ -11,7 +11,7 @@ const router = Router();
 // router.get("/");
 router.post(
   "/",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.laundryService, "create"),
   validateRequest(LaundryServiceValidation.CreateLaundryServiceSchema),
   LaundryServiceController.createLaundryService
@@ -19,17 +19,13 @@ router.post(
 
 router.patch(
   "/:id",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.laundryService, "update"),
   validateRequest(LaundryServiceValidation.UpdateLaundryServiceSchema),
   LaundryServiceController.updateLaundryService
 );
 
-router.get(
-  "/",
-  checkPermission(EAppFeatures.laundryService, "read"),
-  LaundryServiceController.getAllLaundryService
-);
+router.get("/", LaundryServiceController.getAllLaundryService);
 
 const LaundryServiceRoutes = router;
 

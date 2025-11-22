@@ -10,7 +10,7 @@ const router = Router();
 
 router.post(
   "/create",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.category, "create"),
   validateRequest(CategoryValidations.createCategoryValidationSchema),
   CategoryControllers.createCategory
@@ -26,14 +26,14 @@ router.get(
 
 router.delete(
   "/:id",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.category, "delete"),
   CategoryControllers.deleteCategory
 );
 
 router.patch(
   "/:id",
-  validateAuth,
+  validateAuth(),
   checkPermission(EAppFeatures.category, "update"),
   validateRequest(CategoryValidations.updateCategoryValidationSchema),
   CategoryControllers.updateCategory
