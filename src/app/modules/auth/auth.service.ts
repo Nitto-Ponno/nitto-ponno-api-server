@@ -398,14 +398,15 @@ const updatePasswordService = async (
 
 const getMyDataFromDB = async (
   email: string,
-  query: Record<string, unknown>
+  query: Record<string, unknown>,
+  userRole: string
 ) => {
   let select = "";
   let populate: any = [];
 
   if (query.select) {
     select = query.select as string;
-  } else {
+  } else if (userRole !== "customer") {
     populate = [
       {
         path: "role",

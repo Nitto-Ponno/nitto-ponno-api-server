@@ -92,17 +92,6 @@ const getSingleProductBySlugFromDB = async (slug: string) => {
   return result;
 };
 
-const getSingleProductBySlugFromDB = async (slug: string) => {
-  const result = await Product.findOne({ slug })
-    .populate("services", "name")
-    .populate("attributes", "name")
-    .populate("variations.serviceId", "name")
-    .populate("variations.attributeValues.attributeId", "name")
-    .select("-__v");
-
-  if (!result) throw new Error("Product not found");
-  return result;
-};
 
 const updateProductToDB = async (id: string, data: Partial<ILProduct>) => {
   const result = await Product.findByIdAndUpdate(id, data, {
