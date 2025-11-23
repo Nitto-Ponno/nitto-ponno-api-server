@@ -38,10 +38,12 @@ const userLogin = catchAsync(async (req, res) => {
 
   res.cookie("nitto_ponno_refresh_token", refreshToken, {
     secure: config.node_environment !== "development",
+    sameSite:"none"
   });
 
   res.cookie("nitto_ponno_access_token", accessToken, {
     secure: config.node_environment !== "development",
+    sameSite:"none"
   });
 
   sendResponse(res, {
@@ -153,7 +155,7 @@ const updatePassword = catchAsync(async (req, res) => {
 
 const getMyData = catchAsync(async (req, res) => {
   const user = req.user;
-  const result = await AuthServices.getMyDataFromDB(user.email, req.query);
+  const result = await AuthServices.getMyDataFromDB(user.email, req.query,user?.userRole);
 
   sendResponse(res, {
     success: true,
