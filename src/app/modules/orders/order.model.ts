@@ -5,11 +5,11 @@ import {
   PaymentMethod,
   PaymentStatus,
 } from "./order.interface";
+import { productVariationSchema } from "../laundryProduct/luandryProduct.model";
 
 const orderSchema = new Schema<IOrder>(
   {
     orderId: { type: String, unique: true },
-
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     pickupAddress: {
       fullAddress: { type: String, required: true },
@@ -26,7 +26,7 @@ const orderSchema = new Schema<IOrder>(
       {
         productId: { type: Schema.Types.ObjectId, ref: "LaundryProduct" },
         productName: String,
-        serviceId: { type: Schema.Types.ObjectId, ref: "LaundryService" },
+        variations: [productVariationSchema],
         serviceName: String,
         quantity: { type: Number, required: true, min: 1 },
         unitPrice: { type: Number, required: true },
@@ -38,11 +38,6 @@ const orderSchema = new Schema<IOrder>(
           },
         ],
         subtotal: Number,
-        discount: {
-          type: { type: String, enum: ["percent", "flat"] },
-          value: Number,
-          appliedBy: String,
-        },
       },
     ],
     subtotal: { type: Number, required: true },
@@ -84,8 +79,8 @@ const orderSchema = new Schema<IOrder>(
     },
     actualPickupTime: Date,
     actualDeliveryTime: Date,
-    pickupRider: { type: Schema.Types.ObjectId, ref: "Rider" },
-    deliveryRider: { type: Schema.Types.ObjectId, ref: "Rider" },
+    pickupRider: { type: Schema.Types.ObjectId, ref: "User" },
+    deliveryRider: { type: Schema.Types.ObjectId, ref: "User" },
     status: {
       type: String,
       enum: Object.values(OrderStatus),
@@ -99,7 +94,7 @@ const orderSchema = new Schema<IOrder>(
           required: true,
         },
         timestamp: { type: Date, default: Date.now },
-        rider: { type: Schema.Types.ObjectId, ref: "Rider" },
+        rider: { type: Schema.Types.ObjectId, ref: "User" },
         note: String,
       },
     ],
