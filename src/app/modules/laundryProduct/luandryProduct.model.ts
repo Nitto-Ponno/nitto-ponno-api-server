@@ -31,6 +31,10 @@ export const productVariationSchema = new Schema<IProductVariation>(
       required: true,
       min: 0,
     },
+    thumbnail: {
+      type: String,
+      default: "",
+    },
     discount: {
       type: discountSchema,
       required: false,
