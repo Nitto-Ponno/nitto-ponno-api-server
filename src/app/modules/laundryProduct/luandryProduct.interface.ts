@@ -9,6 +9,7 @@ export interface IProductVariation {
   _id?: Types.ObjectId;
   serviceId: Types.ObjectId;
   attributeValues: IAttributeValue[];
+  thumbnail?: string;
   price: number;
   discount?: {
     type: "percent" | "flat";
