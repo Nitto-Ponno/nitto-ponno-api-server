@@ -98,12 +98,14 @@ const getAllOrders = async (query: any) => {
     search,
     startDate,
     endDate,
+    paymentStatus,
   } = query;
 
   const filter: any = {};
 
   if (status) filter.status = status;
   if (paymentMethod) filter.paymentMethod = paymentMethod;
+  if (paymentStatus) filter.paymentStatus = paymentStatus;
   if (search) {
     filter.$or = [
       { orderId: { $regex: search, $options: "i" } },

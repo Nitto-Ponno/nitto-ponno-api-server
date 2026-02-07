@@ -1,0 +1,148 @@
+paths:
+  /admin/toggle-rider/{id}:
+    post:
+      tags: [Roles, Admin]
+      summary: Toggle user role between customer and rider
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: User ID (MongoDB ObjectId)
+          example: 507f1f77bcf86cd799439011
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [isRider]
+              properties:
+                isRider:
+                  type: boolean
+      responses:
+        "200":
+          description: Role successfully updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    examples:
+                      toRider:
+                        value: "User role updated to rider"
+                      toCustomer:
+                        value: "User role updated to customer"
+                  data:
+                    type: object
+                    description: Updated user document (partial)
+                    properties:
+                      _id:
+                        type: string
+                      name:
+                        type: string
+                      email:
+                        type: string
+                      role:
+                        type: string
+                        enum: [customer, rider, admin]
+                      userType:
+                        type: string
+                        enum: [customer, rider, admin]
+                      # ... other fields may be included depending on your model
+        "400":
+          description: Bad request (missing id or invalid payload)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized - missing or invalid token
+        "403":
+          description: Forbidden - user is not admin
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+  /admin/rider/get-all:
+    get:
+      tags:
+        - Admin
+      summary: Get all riders (Admin)
+      description: Admin panel - retrieve all riders with powerful filters
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: search
+          in: query
+          description: Search by orderId, customer name or phone
+          schema:
+            type: string
+      responses:
+        "200":
+          description: All orders retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Order"
+                      meta:
+                        $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        statusCode:
+          type: integer
+          example: 404
+        message:
+          type: string
+          example: "User not found"
+        errorSources:
+          type: array
+          items:
+            type: object
+            properties:
+              path:
+                type: string
+              message:
+                type: string
+          nullable: true

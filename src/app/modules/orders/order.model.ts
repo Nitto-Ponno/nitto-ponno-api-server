@@ -24,7 +24,7 @@ const orderSchema = new Schema<IOrder>(
     },
     items: [
       {
-        productId: { type: Schema.Types.ObjectId, ref: "LaundryProduct" },
+        productId: { type: Schema.Types.ObjectId, ref: "Product" },
         productName: String,
         variations: [productVariationSchema],
         serviceName: String,

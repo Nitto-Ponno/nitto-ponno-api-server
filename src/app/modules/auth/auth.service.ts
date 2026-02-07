@@ -121,6 +121,56 @@ const userLoginFromDB = async (payload: TLoginCredentials) => {
   };
 };
 
+const riderLoginFromDB = async (payload: TLoginCredentials) => {
+  const userExist = await User.isUserExistsByEmail(payload.email);
+
+  if (!userExist) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User does not exist.");
+  }
+
+  if (userExist.userType !== "rider" || userExist.role === "customer") {
+    throw new AppError(httpStatus.UNAUTHORIZED, "You are not an rider");
+  }
+
+  if (userExist.isDeleted) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Sorry, your account was deleted"
+    );
+  }
+
+  const matchPassword = await User.matchUserPassword(
+    payload.password,
+    userExist.password
+  );
+
+  if (!matchPassword) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Wrong password");
+  }
+
+  const jwtPayload = {
+    // userRole: userExist.role,
+    email: userExist.email,
+  };
+
+  const accessToken = createToken({
+    payload: jwtPayload,
+    secret: config.access_secret as string,
+    expiresIn: config.access_token_expires_in,
+  });
+  const refreshToken = createToken({
+    payload: jwtPayload,
+    secret: config.refresh_secret as string,
+    expiresIn: config.refresh_token_expires_in,
+  });
+
+  return {
+    accessToken,
+    refreshToken,
+    isVerified: userExist.isVerified,
+  };
+};
+
 const refreshToken = async (token: string) => {
   if (!token) {
     throw new AppError(
@@ -491,6 +541,7 @@ const createCustomerIntoDB = async (customer: TUser) => {
 export const AuthServices = {
   adminLoginFromDB,
   refreshToken,
+  riderLoginFromDB,
   getMyDataFromDB,
   forgotPasswordService,
   resetPasswordService,
