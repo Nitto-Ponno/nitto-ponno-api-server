@@ -28,6 +28,29 @@ const adminLogin = catchAsync(async (req, res) => {
     },
   });
 });
+const riderLogin = catchAsync(async (req, res) => {
+  const payload: TLoginCredentials = req.body;
+
+  const result = await AuthServices.riderLoginFromDB(payload);
+
+  const { refreshToken, accessToken, isVerified } = result;
+
+  res.cookie("nitto_ponno_refresh_token", refreshToken, {
+    secure: config.node_environment !== "development",
+  });
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: isVerified
+      ? "Login successfull, welcome back"
+      : "Please varify your email and try again",
+    data: {
+      accessToken: isVerified ? accessToken : null,
+      isVerified,
+    },
+  });
+});
 
 const userLogin = catchAsync(async (req, res) => {
   const payload: TLoginCredentials = req.body;
@@ -179,6 +202,7 @@ const registerCustomer = catchAsync(async (req, res) => {
 export const AuthController = {
   adminLogin,
   refreshToken,
+  riderLogin,
   getMyData,
   forgotPassword,
   resetPassword,

@@ -72,7 +72,7 @@ const UserSchema = new Schema<TUser, TUserModel>({
   },
   userType: {
     type: String,
-    enum: ["customer", "admin"],
+    enum: ["customer", "admin", "rider"],
     default: "customer",
   },
   name: {

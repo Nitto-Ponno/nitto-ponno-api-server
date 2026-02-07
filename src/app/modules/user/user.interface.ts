@@ -20,7 +20,7 @@ export interface TUser {
   isActive?: boolean;
   role: "customer" | string;
   isVerified?: boolean;
-  userType: "customer" | "admin";
+  userType: "customer" | "admin" | "rider";
   isMasterAdmin?: boolean;
   phoneNumber: string;
   otp: string;

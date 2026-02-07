@@ -5,6 +5,7 @@ import router from "./app/routes";
 import notFound from "./app/middleware/notFound";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swagger";
+import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 
 const app: Application = express();
 
@@ -22,7 +23,7 @@ app.use("/api/v1", router);
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// app.use(globalErrorHandler);
+app.use(globalErrorHandler);
 
 app.use(notFound);
 
